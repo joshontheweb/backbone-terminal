@@ -1,10 +1,5 @@
 (function() {
-    var utils = {};
-    
-    _.templateSettings = {
-        interpolate : /\{\{(.+?)\}\}/g,
-        evaluate: /\{\%(.+?)\%\}/g
-    }
+    utils = {};
     
     utils.instantiate = function(model, view) {
         var model = new model();

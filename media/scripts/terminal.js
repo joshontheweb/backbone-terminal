@@ -43,8 +43,6 @@
             'historyIndex': -1
         },
 
-        whitelist: ['history', '!'],
-
         commands: {
             history: function () {
                 var i;
@@ -59,8 +57,18 @@
             },
 
             '!': function(args) {
-               var index = args.shift();
-               return this.evaluate(this.cmdHistory[this.cmdHistory.length - index - 1]);
+               var index = +args.shift() + 1;
+               return this.evaluate(this.cmdHistory[this.cmdHistory.length - index]);
+            },
+
+            help: function(args) {
+                var output = 'Available commands: \n\n';
+                for (command in this.commands) {
+                    if (this.commands.hasOwnProperty(command)) {
+                        output += utils.sprintf('%-10s', command);
+                    }
+                }
+                return output;
             }
         }
     });
@@ -95,7 +103,7 @@
             $el.append($template);
             this.$prompt.attr('contenteditable', false);
             this.$prompt = $template.filter('.prompt');
-            this.$prompt.focus();
+            this.caretToEnd(this.$prompt[0]);
         },
 
         promptKeypress: function(e) {
@@ -113,6 +121,40 @@
                     e.preventDefault();
                     this.cycleHistory('down');
                     break;
+                case $.ui.keyCode.TAB:
+                    e.preventDefault();
+                    this.tabComplete(e);
+            }
+        },
+
+        tabComplete: function() {
+            var fragment = this.$prompt.text();
+            var matches = []
+            for (command in this.model.commands) {
+                if (this.model.commands.hasOwnProperty(command)) {
+                    if (command.indexOf(fragment) === 0) {
+                        matches.push(command);
+                    }
+                }
+            }
+
+            if (matches.length) {
+                var i;
+                var output = '';
+                if (matches.length === 1) {
+                    this.$prompt.text(matches[0] + ' ');
+                    this.caretToEnd(this.$prompt[0]);
+                } else {
+                    for (i = 0; i < matches.length; i++) {
+                        output += utils.sprintf('%-10s', matches[i]);
+                    }
+                    
+                    if (output === this.model.get('stdout')) {
+                        this.model.trigger('change:stdout');
+                    } else {
+                        this.model.set({'stdout': output});
+                    }
+                }
             }
         },
 
