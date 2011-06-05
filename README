@@ -1,0 +1,3 @@
+For some unknown reason I stayed up all night last night and built this active interpreter platform with backbone.js.  
+For now it only has a very basic history command.  Next I will work on adding more commands.  Eventually I want to build
+an online text-based adventure game with it.
