@@ -1,6 +1,36 @@
 (function() {
+    term = {};
+
+    term.commands = {
+        history: function () {
+            var i;
+            var output = [];
+            var copy = this.cmdHistory.slice(0);
+
+            copy.reverse();
+            for (i = 0; i < copy.length; i++) {
+                output += i +' '+ copy[i] +'<br />';
+            }
+            return output
+        },
+
+        '!': function(args) {
+           var index = +args.shift() + 1;
+           return this.evaluate(this.cmdHistory[this.cmdHistory.length - index]);
+        },
+
+        help: function(args) {
+            var output = 'Available commands: \n\n';
+            for (command in term.commands) {
+                if (term.commands.hasOwnProperty(command)) {
+                    output += utils.sprintf('%-10s', command);
+                }
+            }
+            return output;
+        }
+    }
     
-    Terminal = Backbone.Model.extend({
+    term.Terminal = Backbone.Model.extend({
         evaluate: function(string) {
             var key;
             var command;
@@ -16,8 +46,8 @@
             }
 
             try {
-                if (_.isFunction(this.commands[command[0]])) {
-                    return this.commands[command[0]].call(this, _.tail(command));
+                if (_.isFunction(term.commands[command[0]])) {
+                    return term.commands[command[0]].call(this, _.tail(command));
                 }
                 throw new Error('Command not found');
             }
@@ -41,39 +71,10 @@
         defaults: {
             'stdout': 'Welcome to term.js',
             'historyIndex': -1
-        },
-
-        commands: {
-            history: function () {
-                var i;
-                var output = [];
-                var copy = this.cmdHistory.slice(0);
-
-                copy.reverse();
-                for (i = 0; i < copy.length; i++) {
-                    output += i +' '+ copy[i] +'<br />';
-                }
-                return output
-            },
-
-            '!': function(args) {
-               var index = +args.shift() + 1;
-               return this.evaluate(this.cmdHistory[this.cmdHistory.length - index]);
-            },
-
-            help: function(args) {
-                var output = 'Available commands: \n\n';
-                for (command in this.commands) {
-                    if (this.commands.hasOwnProperty(command)) {
-                        output += utils.sprintf('%-10s', command);
-                    }
-                }
-                return output;
-            }
         }
     });
 
-    TerminalView = Backbone.View.extend({
+    term.TerminalView = Backbone.View.extend({
         initialize: function() {
             
             _.bindAll(this, 'respond', 'enter', 'promptKeypress', 'showHistory');
@@ -130,8 +131,8 @@
         tabComplete: function() {
             var fragment = this.$prompt.text();
             var matches = []
-            for (command in this.model.commands) {
-                if (this.model.commands.hasOwnProperty(command)) {
+            for (command in term.commands) {
+                if (term.commands.hasOwnProperty(command)) {
                     if (command.indexOf(fragment) === 0) {
                         matches.push(command);
                     }

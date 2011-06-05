@@ -1,16 +1,7 @@
 (function() {
 
-    _.templateSettings = {
-        interpolate : /\{\{(.+?)\}\}/g,
-        evaluate: /\{\%(.+?)\%\}/g
-    }
     
-    var instantiate = function(model, view) {
-        var model = new model();
-        return {model: model, view: new view({model: model})};
-    }
-    
-    var terminal = instantiate(Terminal, TerminalView);
+    var terminal = utils.instantiate(term.Terminal, term.TerminalView);
     
     $('.body').append(terminal.view.render().el);
     
