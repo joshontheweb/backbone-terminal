@@ -1,0 +1,12 @@
+//vars
+
+body { background: #eee; }
+
+.terminal { 
+  border: 1px solid #999; background: #000; color: #00fb00; font-family: monospace; padding: 15px; height: 300px; overflow-y: scroll; cursor: text;
+}
+.terminal *:focus { outline: none; }
+.terminal p { margin: 0 0 5px 0; }
+.terminal .prompt { margin-left: 12px; white-space: pre; }
+.terminal .prompt:before { content: '$'; position: relative; left: -12px; }
+.terminal .stdout { white-space: pre; }
